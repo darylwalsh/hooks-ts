@@ -14,7 +14,7 @@ const initialState: State = {
   episodes: [],
   favorites: [],
 }
-export const Store = React.createContext<State>(initialState)
+export const Store = React.createContext<State | any>(initialState)
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -26,5 +26,10 @@ const reducer = (state: State, action: Action): State => {
 }
 
 export const StoreProvider = (props: any): JSX.Element => {
-  return <Store.Provider value={initialState}>{props.children}</Store.Provider>
+  const [state, dispatch] = React.useReducer(reducer, initialState)
+  return (
+    <Store.Provider value={{ state, dispatch }}>
+      {props.children}
+    </Store.Provider>
+  )
 }

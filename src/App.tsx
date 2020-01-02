@@ -2,12 +2,43 @@ import React from 'react'
 import { Store } from './Store'
 
 const App: React.FC = () => {
-  const store = React.useContext(Store)
+  const { state, dispatch } = React.useContext(Store)
+
+  const fetchDataAction = async () => {
+    const URL =
+      'https://api.tvmaze.com/singlesearch/shows?q=rick-&-morty&embed=episodes'
+    const data = await fetch(URL)
+    const dataJSON = await data.json()
+    return dispatch({
+      type: 'FETCH_DATA',
+      payload: dataJSON._embedded.episodes,
+    })
+  }
+
+  React.useEffect(() => {
+    state.episodes.length === 0 && fetchDataAction()
+  })
+
   return (
     <React.Fragment>
-    {console.log(store)}
       <h1>React and Morty</h1>
       <p>Rick and Morty Episode Picker</p>
+      <section>
+        {state.episodes.map((episode: any) => {
+          return (
+            <section key={episode.id}>
+              <img
+                src={episode.image.medium}
+                alt={`Rick and Morty ${episode.name}`}
+              />
+              <div>{episode.name}</div>
+              <section>
+                Season: {episode.season} Number: {episode.number}
+              </section>
+            </section>
+          )
+        })}
+      </section>
     </React.Fragment>
   )
 }
